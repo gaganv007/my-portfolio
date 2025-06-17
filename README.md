@@ -4,6 +4,22 @@ A modern portfolio website created as a term project to showcase my skills and e
 
 **Live Demo**: [https://animated-croissant-177628.netlify.app/](https://animated-croissant-177628.netlify.app/)
 
+### Design Inspiration & References
+
+After analyzing numerous portfolios, I drew inspiration from these exceptional examples:
+
+1. **[Brittany Chiang](https://brittanychiang.com/)** 
+   - **What I Implemented**: Clean navigation bar with hover effects, smooth scrolling between sections, and the navy/teal color scheme
+   - **Why**: Her minimalist approach and excellent code organization set the standard for professional developer portfolios
+
+2. **[Soumyajit Behera](https://soumyajit.vercel.app/)**
+   - **What I Implemented**: Project cards with technology tags, GitHub integration links, and mobile responsive grid layout
+   - **Why**: As a fellow student his portfolio showed how to present academic projects effectively
+
+3. **[Matt Farley](https://mattfarley.ca/)**
+   - **What I Implemented**: Clear call-to-action buttons, simple contact section, and mobile-first design approach
+   - **Why**: His portfolio proves that simple and well executed design can be more effective than complex animations
+
 ## Features
 
 ### Core Features
