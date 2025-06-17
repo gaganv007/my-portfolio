@@ -77,6 +77,17 @@ body {
   opacity: 0.7;
 }
 
+/* Canvas Background */
+.canvas-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.3;
+}
+
 /* Navigation */
 .navbar {
   position: fixed;
@@ -267,8 +278,8 @@ section {
   box-shadow: 0 10px 20px rgba(100, 255, 218, 0.2);
 }
 
-/* Hero Section */
-.hero {
+/* Main Section */
+.main {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -277,21 +288,21 @@ section {
   overflow: hidden;
 }
 
-.hero-container {
+.main-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
   width: 100%;
 }
 
-.hero-content {
+.main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
 }
 
-.hero-title {
+.main-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 700;
   margin-bottom: 1rem;
@@ -303,27 +314,27 @@ section {
   position: relative;
 }
 
-.hero-subtitle {
+.main-subtitle {
   font-size: clamp(1.2rem, 3vw, 1.8rem);
   color: var(--text-secondary);
   margin-bottom: 1.5rem;
   font-weight: 400;
 }
 
-.hero-description {
+.main-description {
   font-size: 1.1rem;
   color: var(--text-light);
   margin-bottom: 2rem;
   max-width: 500px;
 }
 
-.hero-buttons {
+.main-buttons {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.hero-visual {
+.main-visual {
   display: flex;
   justify-content: center;
   position: relative;
@@ -404,6 +415,8 @@ section {
 .about-image {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .image-placeholder {
@@ -416,6 +429,7 @@ section {
   justify-content: center;
   border: 3px solid var(--primary-color);
   overflow: hidden;
+  margin: 0 auto;
 }
 
 .profile-img {
@@ -426,6 +440,23 @@ section {
 
 .profile-icon {
   font-size: 4rem;
+}
+
+.tech-stack-visual {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.skills-radar {
+  width: 100%;
+  height: 100%;
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Skills Section */
@@ -474,6 +505,13 @@ section {
   font-size: 1.2rem;
 }
 
+.drag-hint {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
 .skill-tags {
   display: flex;
   flex-wrap: wrap;
@@ -488,11 +526,26 @@ section {
   border-radius: 15px;
   font-size: 0.9rem;
   transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: move;
+  user-select: none;
 }
 
 .skill-tag:hover {
   background: var(--primary-color);
   color: var(--bg-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+}
+
+.skill-tag:active {
+  opacity: 0.5;
+}
+
+.skill-icon {
+  font-size: 1.1rem;
 }
 
 /* Projects Section */
@@ -510,7 +563,6 @@ section {
   background: var(--bg-primary);
   border: 1px solid var(--accent-color);
   border-radius: 10px;
-  padding: 2rem;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
@@ -532,6 +584,56 @@ section {
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: 600;
+  z-index: 3;
+}
+
+.project-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.project-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: var(--transition);
+  background: rgba(10, 25, 47, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card:hover .project-overlay {
+  opacity: 1;
+}
+
+.project-demo-image {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  transform: scale(0.9);
+  transition: var(--transition);
+}
+
+.project-card:hover .project-demo-image {
+  transform: scale(1);
+}
+
+.project-content {
+  padding: 2rem;
 }
 
 .project-content h3 {
@@ -851,7 +953,7 @@ section {
     left: 0;
   }
 
-  .hero-content {
+  .main-content {
     grid-template-columns: 1fr;
     text-align: center;
     gap: 2rem;
@@ -864,6 +966,14 @@ section {
 
   .about-stats {
     justify-content: center;
+  }
+
+  .tech-stack-visual {
+    margin-top: 2rem;
+  }
+
+  .project-image-container {
+    height: 200px;
   }
 
   .contact-info-center {
@@ -897,7 +1007,7 @@ section {
     left: 30px;
   }
 
-  .hero-buttons {
+  .main-buttons {
     justify-content: center;
   }
 
@@ -924,11 +1034,11 @@ section {
     grid-template-columns: 1fr;
   }
 
-  .hero-title {
+  .main-title {
     font-size: 2rem;
   }
 
-  .hero-subtitle {
+  .main-subtitle {
     font-size: 1.2rem;
   }
 

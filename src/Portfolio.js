@@ -13,18 +13,83 @@ const Portfolio = () => {
   const projectsRef = useRef(null);
   const experienceRef = useRef(null);
   const contactRef = useRef(null);
-
-  // Contact form state
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
+  const canvasRef = useRef(null);
 
   // Skills state
   const [activeSkillCategory, setActiveSkillCategory] = useState(0);
-  const [projectFilter, setProjectFilter] = useState('all');
   const [experienceTab, setExperienceTab] = useState('experience');
+  const [draggedSkill, setDraggedSkill] = useState(null);
+  const [skillOrder, setSkillOrder] = useState({});
+
+  // Canvas animation for background
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const particleCount = 50;
+    
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.opacity = Math.random() * 0.5 + 0.2;
+      }
+      
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        if (this.x > canvas.width) this.x = 0;
+        else if (this.x < 0) this.x = canvas.width;
+        
+        if (this.y > canvas.height) this.y = 0;
+        else if (this.y < 0) this.y = canvas.height;
+      }
+      
+      draw() {
+        ctx.fillStyle = `rgba(100, 255, 218, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // Handle resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [theme]);
 
   // Mouse tracking for cursor effect
   useEffect(() => {
@@ -74,18 +139,44 @@ const Portfolio = () => {
     setIsMenuOpen(false);
   };
 
-  // Form submission handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Thank you for your message! I\'ll get back to you soon.');
-    setFormData({ name: '', email: '', message: '' });
+  // Drag and Drop handlers
+  const handleDragStart = (e, skill, categoryIndex) => {
+    setDraggedSkill({ skill, categoryIndex });
+    e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, targetSkill, targetCategoryIndex) => {
+    e.preventDefault();
+    
+    if (draggedSkill && draggedSkill.categoryIndex === targetCategoryIndex) {
+      const categoryKey = skillCategories[targetCategoryIndex].category;
+      const currentOrder = skillOrder[categoryKey] || skillCategories[targetCategoryIndex].skills;
+      
+      const draggedIndex = currentOrder.findIndex(s => s.name === draggedSkill.skill.name);
+      const targetIndex = currentOrder.findIndex(s => s.name === targetSkill.name);
+      
+      const newOrder = [...currentOrder];
+      newOrder.splice(draggedIndex, 1);
+      newOrder.splice(targetIndex, 0, draggedSkill.skill);
+      
+      setSkillOrder({
+        ...skillOrder,
+        [categoryKey]: newOrder
+      });
+    }
+    
+    setDraggedSkill(null);
+  };
+
+  // Get ordered skills for display
+  const getOrderedSkills = (categoryIndex) => {
+    const categoryKey = skillCategories[categoryIndex].category;
+    return skillOrder[categoryKey] || skillCategories[categoryIndex].skills;
   };
 
   // Data
@@ -98,7 +189,9 @@ const Portfolio = () => {
       github: "https://github.com/Lexinator6647/Decentralized-MLOps",
       featured: true,
       category: "ml",
-      date: "May 2025"
+      date: "May 2025",
+      image: "1.jpg",
+      demoImage: "1.jpg"
     },
     {
       id: 2,
@@ -108,7 +201,9 @@ const Portfolio = () => {
       github: "https://github.com/gaganv007/GNN-Based-Stock-Relations-and-Prediction",
       featured: true,
       category: "ml",
-      date: "Apr 2025"
+      date: "Apr 2025",
+      image: "2.jpg",
+      demoImage: "2.jpg"
     },
     {
       id: 3,
@@ -118,30 +213,68 @@ const Portfolio = () => {
       github: "https://github.com/gaganv007/anomaly_detection",
       featured: true,
       category: "ml",
-      date: "May 2024"
+      date: "May 2024",
+      image: "3.jpg",
+      demoImage: "3.jpg"
     }
   ];
 
   const skillCategories = [
     {
       category: "Programming Languages",
-      skills: ["Python", "Java", "C/C++", "SQL", "JavaScript", "TypeScript", "R"]
+      skills: [
+        { name: "Python", icon: "🐍" },
+        { name: "Java", icon: "☕" },
+        { name: "C/C++", icon: "⚙️" },
+        { name: "SQL", icon: "🗄️" },
+        { name: "JavaScript", icon: "📜" },
+        { name: "TypeScript", icon: "📘" },
+        { name: "R", icon: "📊" }
+      ]
     },
     {
       category: "Machine Learning",
-      skills: ["TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Neural Networks"]
+      skills: [
+        { name: "TensorFlow", icon: "🧠" },
+        { name: "PyTorch", icon: "🔥" },
+        { name: "Keras", icon: "🤖" },
+        { name: "Scikit-learn", icon: "📈" },
+        { name: "Neural Networks", icon: "🕸️" }
+      ]
     },
     {
       category: "Data & DevOps",
-      skills: ["Pandas", "NumPy", "Power BI", "AWS", "Docker", "Kubernetes", "Git"]
+      skills: [
+        { name: "Pandas", icon: "🐼" },
+        { name: "NumPy", icon: "🔢" },
+        { name: "Power BI", icon: "📊" },
+        { name: "AWS", icon: "☁️" },
+        { name: "Docker", icon: "🐳" },
+        { name: "Kubernetes", icon: "☸️" },
+        { name: "Git", icon: "🌿" }
+      ]
     },
     {
       category: "Web & Databases",
-      skills: ["React.js", "Node.js", "Flask", "MongoDB", "MySQL", "REST APIs"]
+      skills: [
+        { name: "React.js", icon: "⚛️" },
+        { name: "Node.js", icon: "💚" },
+        { name: "Flask", icon: "🌶️" },
+        { name: "MongoDB", icon: "🍃" },
+        { name: "MySQL", icon: "🐬" },
+        { name: "REST APIs", icon: "🔌" }
+      ]
     },
     {
       category: "AI/ML Specialties",
-      skills: ["NLP", "Computer Vision", "MLOps", "Financial Modeling", "GenAI", "LLMs"]
+      skills: [
+        { name: "NLP", icon: "💬" },
+        { name: "Computer Vision", icon: "👁️" },
+        { name: "MLOps", icon: "🔧" },
+        { name: "Financial Modeling", icon: "💹" },
+        { name: "GenAI", icon: "🎨" },
+        { name: "LLMs", icon: "🤖" }
+      ]
     }
   ];
 
@@ -200,6 +333,13 @@ const Portfolio = () => {
 
   return (
     <div className={`portfolio ${theme}`}>
+      {/* Canvas Background */}
+      <canvas 
+        ref={canvasRef} 
+        className="canvas-background"
+        aria-hidden="true"
+      />
+      
       {/* Custom Cursor */}
       {!isTouchDevice() && (
         <div 
@@ -251,20 +391,20 @@ const Portfolio = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section id="home" ref={homeRef} className="hero">
-        <div className="hero-container">
-          <div className="hero-content">
-            <div className="hero-text">
-              <h1 className="hero-title">
+      {/* Main Section */}
+      <section id="home" ref={homeRef} className="main">
+        <div className="main-container">
+          <div className="main-content">
+            <div className="main-text">
+              <h1 className="main-title">
                 Hi, I'm <span className="highlight">Gagan Veginati</span>
               </h1>
-              <h2 className="hero-subtitle">AI/ML Engineer • Software Developer • Data Scientist</h2>
-              <p className="hero-description">
+              <h2 className="main-subtitle">AI/ML Engineer • Software Developer • Data Scientist</h2>
+              <p className="main-description">
                 I build intelligent systems and scalable applications using cutting-edge AI/ML technologies. 
                 Currently pursuing my Master's in Computer Science at Boston University.
               </p>
-              <div className="hero-buttons">
+              <div className="main-buttons">
                 <button 
                   className="btn btn-primary"
                   onClick={() => scrollToSection('projects')}
@@ -279,7 +419,7 @@ const Portfolio = () => {
                 </button>
               </div>
             </div>
-            <div className="hero-visual">
+            <div className="main-visual">
               <div className="floating-card">
                 <div className="card-content">
                   <div className="code-snippet">
@@ -343,6 +483,27 @@ const Portfolio = () => {
               <div className="image-placeholder">
                 <img src="profile.jpg" alt="Gagan Veginati" className="profile-img" />
               </div>
+              <div className="tech-stack-visual">
+                <svg viewBox="0 0 200 200" className="skills-radar">
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="var(--accent-color)" strokeWidth="1" />
+                  <circle cx="100" cy="100" r="60" fill="none" stroke="var(--accent-color)" strokeWidth="1" />
+                  <circle cx="100" cy="100" r="40" fill="none" stroke="var(--accent-color)" strokeWidth="1" />
+                  <circle cx="100" cy="100" r="20" fill="none" stroke="var(--accent-color)" strokeWidth="1" />
+                  <polygon 
+                    points="100,30 150,70 150,130 100,170 50,130 50,70" 
+                    fill="var(--primary-color)" 
+                    fillOpacity="0.3" 
+                    stroke="var(--primary-color)" 
+                    strokeWidth="2"
+                  />
+                  <text x="100" y="20" textAnchor="middle" fill="var(--text-primary)" fontSize="12">ML/AI</text>
+                  <text x="170" y="70" textAnchor="middle" fill="var(--text-primary)" fontSize="12">Web</text>
+                  <text x="170" y="140" textAnchor="middle" fill="var(--text-primary)" fontSize="12">Data</text>
+                  <text x="100" y="190" textAnchor="middle" fill="var(--text-primary)" fontSize="12">DevOps</text>
+                  <text x="30" y="140" textAnchor="middle" fill="var(--text-primary)" fontSize="12">Cloud</text>
+                  <text x="30" y="70" textAnchor="middle" fill="var(--text-primary)" fontSize="12">Backend</text>
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -368,10 +529,19 @@ const Portfolio = () => {
           <div className="skills-content">
             <div className="skill-category active">
               <h3>{skillCategories[activeSkillCategory].category}</h3>
+              <p className="drag-hint">💡 Drag and drop to reorder skills</p>
               <div className="skill-tags">
-                {skillCategories[activeSkillCategory].skills.map((skill, index) => (
-                  <span key={index} className="skill-tag">
-                    {skill}
+                {getOrderedSkills(activeSkillCategory).map((skill, index) => (
+                  <span 
+                    key={index} 
+                    className="skill-tag"
+                    draggable="true"
+                    onDragStart={(e) => handleDragStart(e, skill, activeSkillCategory)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, skill, activeSkillCategory)}
+                  >
+                    <span className="skill-icon">{skill.icon}</span>
+                    {skill.name}
                   </span>
                 ))}
               </div>
@@ -387,6 +557,22 @@ const Portfolio = () => {
           <div className="projects-grid">
             {projects.map((project) => (
               <div key={project.id} className={`project-card ${project.featured ? 'featured' : ''}`}>
+                <div className="project-image-container">
+                  <img 
+                    src={project.image} 
+                    alt={`${project.title} screenshot`}
+                    className="project-image"
+                    loading="lazy"
+                  />
+                  <div className="project-overlay">
+                    <img 
+                      src={project.demoImage} 
+                      alt={`${project.title} demo`}
+                      className="project-demo-image"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
                 <div className="project-content">
                   <h3>{project.title}</h3>
                   <p>{project.description}</p>
