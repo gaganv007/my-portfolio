@@ -2,7 +2,7 @@
 
 A modern portfolio website created as a term project to showcase my skills and experience as an AI/ML Engineer and Software Developer. This project demonstrates proficiency in React.js, responsive design, and modern web development practices.
 
-**Live Demo**: [https://6850c9bf6cd7d089bb28c1d7--animated-croissant-177628.netlify.app/](https://6850c9bf6cd7d089bb28c1d7--animated-croissant-177628.netlify.app/)
+**Live Demo**: [https://animated-croissant-177628.netlify.app/](https://animated-croissant-177628.netlify.app/)
 
 ## Features
 
