@@ -368,6 +368,67 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ============================================================
+   Remaster pass: preloader, marquee, tilt, filter, FAB, cursor
+   ============================================================ */
+
+/* preloader */
+.preloader { position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 22px; background: var(--bg); }
+.pre-logo { width: 88px; height: 88px; border-radius: 24px; background: var(--grad); color: #fff;
+  font-family: var(--display); font-weight: 700; font-size: 36px; display: grid; place-items: center;
+  box-shadow: 0 20px 50px -12px var(--violet); }
+.pre-bar { width: 180px; height: 5px; border-radius: 5px; background: var(--surface-2);
+  overflow: hidden; }
+.pre-bar span { display: block; height: 100%; background: var(--grad); transform-origin: 0%; }
+.preloader p { color: var(--muted); font-size: 14px; letter-spacing: 0.04em; }
+
+/* cursor glow (desktop) */
+.cursor-glow { position: fixed; top: 0; left: 0; width: 340px; height: 340px; margin: -170px 0 0 -170px;
+  border-radius: 50%; pointer-events: none; z-index: 1; will-change: transform;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.16), transparent 65%); }
+[data-theme="light"] .cursor-glow { background: radial-gradient(circle, rgba(124, 92, 255, 0.12), transparent 65%); }
+
+/* tech marquee */
+.marquee { overflow: hidden; padding: 18px 0; border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border); margin: 10px 0 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: inline-flex; align-items: center; white-space: nowrap;
+  animation: scroll-x 32s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-item { display: inline-flex; align-items: center; gap: 22px; font-family: var(--display);
+  font-weight: 600; font-size: 1.1rem; color: var(--muted); padding-left: 22px; }
+.marquee-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); display: inline-block; }
+@keyframes scroll-x { to { transform: translateX(-50%); } }
+
+/* featured tilt + glow */
+.feat-card { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.18s ease; transform-style: preserve-3d; }
+.feat-card::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(124, 92, 255, 0.16), transparent 60%); opacity: 0; transition: opacity 0.25s;
+  pointer-events: none; }
+.feat-card:hover::after { opacity: 1; }
+.feat-card > * { position: relative; z-index: 1; }
+
+/* repo language filter */
+.repo-filter { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
+.repo-filter button { display: inline-flex; align-items: center; gap: 7px; font-size: 13px;
+  font-weight: 500; padding: 8px 14px; border-radius: 999px; cursor: pointer; color: var(--muted);
+  background: var(--surface); border: 1px solid var(--border); transition: 0.2s; }
+.repo-filter button:hover { color: var(--text); }
+.repo-filter button.on { color: var(--text); background: var(--grad-soft);
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--border)); }
+.repo-filter button i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* scroll-to-top */
+.scroll-top { position: fixed; left: 24px; bottom: 24px; z-index: 250; width: 48px; height: 48px;
+  border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2);
+  color: var(--text); font-size: 20px; cursor: pointer; box-shadow: var(--shadow);
+  backdrop-filter: blur(10px); }
+.scroll-top:hover { border-color: var(--cyan); color: var(--cyan); }
+@media (max-width: 480px) { .scroll-top { left: 16px; bottom: 16px; width: 44px; height: 44px; } }
+
+/* ============================================================
    GV Bot — chat assistant
    ============================================================ */
 .bot-launch-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 300;

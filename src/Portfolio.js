@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import {
   profile,
   stats,
@@ -11,6 +11,14 @@ import {
 } from "./data";
 import { useGithubRepos, langColor, prettyName } from "./useGithubRepos";
 import Chatbot from "./Chatbot";
+import {
+  Preloader,
+  CountUp,
+  TiltCard,
+  Marquee,
+  CursorGlow,
+  ScrollTop,
+} from "./ui";
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
 
@@ -108,8 +116,29 @@ const Portfolio = () => {
 
   const repoCount = useMemo(() => repos.length, [repos]);
 
+  // language filter for the live repo grid
+  const [langFilter, setLangFilter] = useState("All");
+  const languages = useMemo(() => {
+    const set = new Map();
+    repos.forEach((r) => r.language && set.set(r.language, (set.get(r.language) || 0) + 1));
+    return ["All", ...[...set.entries()].sort((a, b) => b[1] - a[1]).map((e) => e[0])];
+  }, [repos]);
+  const shownRepos = useMemo(
+    () => (langFilter === "All" ? repos : repos.filter((r) => r.language === langFilter)),
+    [repos, langFilter]
+  );
+
+  const marqueeItems = useMemo(
+    () => [...new Set(skills.flatMap((c) => c.items))].slice(0, 22),
+    []
+  );
+
   return (
     <div className="portfolio">
+      <Preloader />
+      <CursorGlow />
+      <ScrollTop />
+
       {/* scroll progress bar */}
       <motion.div className="scroll-bar" style={{ scaleX: progress }} />
 
@@ -259,12 +288,15 @@ const Portfolio = () => {
         <div className="stats">
           {stats.map((s, i) => (
             <Reveal key={s.label} i={i} className="stat">
-              <div className="stat-val">{s.value}</div>
+              <div className="stat-val"><CountUp value={s.value} /></div>
               <div className="stat-label">{s.label}</div>
             </Reveal>
           ))}
         </div>
       </section>
+
+      {/* tech marquee */}
+      <Marquee items={marqueeItems} />
 
       {/* ABOUT */}
       <section id="about" className="section">
@@ -330,14 +362,7 @@ const Portfolio = () => {
         <div className="featured-grid">
           {featuredProjects.map((p, i) => (
             <Reveal key={p.title} i={i % 3}>
-              <motion.a
-                className={`feat-card accent-${p.accent}`}
-                href={p.repo}
-                target="_blank"
-                rel="noreferrer"
-                whileHover={{ y: -10 }}
-                transition={{ type: "spring", stiffness: 240, damping: 18 }}
-              >
+              <TiltCard className={`feat-card accent-${p.accent}`} href={p.repo}>
                 <div className="feat-top">
                   <span className="feat-emoji">{p.emoji}</span>
                   <span className="feat-period">{p.period}</span>
@@ -351,7 +376,7 @@ const Portfolio = () => {
                   {p.tags.map((t) => <span className="chip" key={t}>{t}</span>)}
                 </div>
                 <span className="feat-link">View on GitHub →</span>
-              </motion.a>
+              </TiltCard>
             </Reveal>
           ))}
         </div>
@@ -369,21 +394,36 @@ const Portfolio = () => {
           <p className="live-msg">Couldn't reach GitHub right now — check it directly <a href={profile.github} target="_blank" rel="noreferrer">here</a>.</p>
         )}
 
+        {status === "ok" && languages.length > 2 && (
+          <div className="repo-filter">
+            {languages.map((l) => (
+              <button
+                key={l}
+                className={langFilter === l ? "on" : ""}
+                onClick={() => setLangFilter(l)}
+              >
+                {l !== "All" && (
+                  <i style={{ background: langColor(l) }} />
+                )}
+                {l}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="repo-grid">
-          <AnimatePresence>
-            {(status === "loading" ? Array.from({ length: 6 }) : repos).map(
+          {(status === "loading" ? Array.from({ length: 6 }) : shownRepos).map(
               (r, i) =>
                 r ? (
                   <motion.a
-                    key={r.id}
+                    key={`${langFilter}-${r.id}`}
                     className="repo-card"
                     href={r.homepage || r.url}
                     target="_blank"
                     rel="noreferrer"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: (i % 6) * 0.05 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: (i % 8) * 0.04 }}
                     whileHover={{ y: -6, scale: 1.02 }}
                   >
                     <div className="repo-top">
@@ -407,7 +447,6 @@ const Portfolio = () => {
                   <div key={i} className="repo-card skeleton" />
                 )
             )}
-          </AnimatePresence>
         </div>
       </section>
 
