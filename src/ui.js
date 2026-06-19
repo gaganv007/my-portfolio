@@ -147,28 +147,177 @@ export function Marquee({ items }) {
   );
 }
 
-/* --- desktop cursor glow --- */
-export function CursorGlow() {
+/* --- signature blend-mode cursor (ring + dot, grows on interactives) --- */
+export function CursorRing() {
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
-    const el = document.createElement("div");
-    el.className = "cursor-glow";
-    document.body.appendChild(el);
-    let raf;
-    const move = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        el.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-      });
+    const ring = document.createElement("div");
+    const dot = document.createElement("div");
+    ring.className = "cursor-ring";
+    dot.className = "cursor-dot";
+    document.body.appendChild(ring);
+    document.body.appendChild(dot);
+
+    let rx = 0, ry = 0, x = 0, y = 0, raf;
+    const loop = () => {
+      rx += (x - rx) * 0.18;
+      ry += (y - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      dot.style.transform = `translate(${x}px, ${y}px)`;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    const move = (e) => { x = e.clientX; y = e.clientY; };
+    const over = (e) => {
+      ring.classList.toggle("hot", !!e.target.closest("a, button, [data-magnetic], input"));
     };
     window.addEventListener("mousemove", move);
+    document.addEventListener("mouseover", over);
     return () => {
       window.removeEventListener("mousemove", move);
+      document.removeEventListener("mouseover", over);
       cancelAnimationFrame(raf);
-      el.remove();
+      ring.remove();
+      dot.remove();
     };
   }, []);
   return null;
+}
+
+/* --- ⌘K command palette --- */
+export function CommandPalette({ commands }) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [active, setActive] = useState(0);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen((o) => !o);
+      } else if (e.key === "Escape") {
+        setOpen(false);
+      }
+    };
+    const onOpen = () => setOpen(true);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("open-palette", onOpen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("open-palette", onOpen);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      setQ("");
+      setActive(0);
+      const t = setTimeout(() => inputRef.current?.focus(), 40);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  const filtered = commands.filter(
+    (c) =>
+      c.label.toLowerCase().includes(q.toLowerCase()) ||
+      (c.hint || "").toLowerCase().includes(q.toLowerCase())
+  );
+
+  const run = (c) => {
+    if (!c) return;
+    setOpen(false);
+    c.run();
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); run(filtered[active]); }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="cmdk-backdrop"
+          onClick={() => setOpen(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="cmdk"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: -18, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -18, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 300, damping: 26 }}
+          >
+            <div className="cmdk-search">
+              <span className="cmdk-prompt">›</span>
+              <input
+                ref={inputRef}
+                value={q}
+                onChange={(e) => { setQ(e.target.value); setActive(0); }}
+                onKeyDown={onKeyDown}
+                placeholder="Jump to a section or action…"
+                aria-label="Command search"
+              />
+              <kbd>esc</kbd>
+            </div>
+            <div className="cmdk-list">
+              {filtered.length === 0 && <div className="cmdk-empty">No matches for “{q}”</div>}
+              {filtered.map((c, i) => (
+                <button
+                  key={c.label}
+                  className={`cmdk-item ${i === active ? "on" : ""}`}
+                  onMouseEnter={() => setActive(i)}
+                  onClick={() => run(c)}
+                >
+                  <span className="cmdk-ico">{c.icon}</span>
+                  <span className="cmdk-label">{c.label}</span>
+                  {c.hint && <span className="cmdk-hint">{c.hint}</span>}
+                </button>
+              ))}
+            </div>
+            <div className="cmdk-foot">
+              <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+              <span><kbd>↵</kbd> run</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* --- magnetic wrapper: pulls toward the cursor --- */
+export function Magnetic({ children, strength = 0.3, className = "" }) {
+  const ref = useRef(null);
+  const onMove = (e) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - (r.left + r.width / 2);
+    const y = e.clientY - (r.top + r.height / 2);
+    el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+  };
+  const reset = () => {
+    if (ref.current) ref.current.style.transform = "translate(0,0)";
+  };
+  return (
+    <span
+      ref={ref}
+      data-magnetic
+      className={`magnetic ${className}`}
+      onMouseMove={onMove}
+      onMouseLeave={reset}
+    >
+      {children}
+    </span>
+  );
 }
 
 /* --- scroll-to-top button (bottom-left, clear of the chatbot) --- */

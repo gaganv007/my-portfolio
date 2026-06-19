@@ -21,12 +21,7 @@ export const profile = {
   github: "https://github.com/gaganv007",
   linkedin: "https://linkedin.com/in/gagan-veginati",
   avatar: "https://avatars.githubusercontent.com/u/82023745?v=4",
-  resumes: [
-    { label: "AI / ML Engineer", file: "Gagan_Veginati_AI_ML_Engineer.pdf" },
-    { label: "Data Scientist", file: "Gagan_Veginati_Data_Scientist.pdf" },
-    { label: "DevOps / MLOps", file: "Gagan_Veginati_DevOps_MLOps_Engineer.pdf" },
-    { label: "Software Engineer", file: "Gagan_Veginati_Software_Engineer.pdf" },
-  ],
+  resume: { label: "AI / ML Engineer", file: "Gagan_Veginati_AI_ML_Engineer.pdf" },
 };
 
 export const stats = [

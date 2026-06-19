@@ -16,8 +16,10 @@ import {
   CountUp,
   TiltCard,
   Marquee,
-  CursorGlow,
+  CursorRing,
+  Magnetic,
   ScrollTop,
+  CommandPalette,
 } from "./ui";
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
@@ -133,11 +135,37 @@ const Portfolio = () => {
     []
   );
 
+  const commands = useMemo(
+    () => [
+      ...NAV.map((s) => ({
+        label: s.charAt(0).toUpperCase() + s.slice(1),
+        hint: "section",
+        icon: "→",
+        run: () => scrollTo(s),
+      })),
+      { label: "Download Résumé", hint: "PDF", icon: "📄",
+        run: () => window.open(`/${profile.resume.file}`, "_blank") },
+      { label: "Email Gagan", hint: "contact", icon: "✉️",
+        run: () => { window.location.href = `mailto:${profile.email}`; } },
+      { label: "Open GitHub", hint: "profile", icon: "🐙",
+        run: () => window.open(profile.github, "_blank") },
+      { label: "Open LinkedIn", hint: "profile", icon: "in",
+        run: () => window.open(profile.linkedin, "_blank") },
+      { label: "Chat with GV Bot", hint: "assistant", icon: "🤖",
+        run: () => window.dispatchEvent(new Event("open-bot")) },
+      { label: theme === "dark" ? "Switch to Light" : "Switch to Dark", hint: "theme", icon: "🌓",
+        run: () => setTheme(theme === "dark" ? "light" : "dark") },
+    ],
+    [theme] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   return (
     <div className="portfolio">
       <Preloader />
-      <CursorGlow />
+      <CursorRing />
       <ScrollTop />
+      <CommandPalette commands={commands} />
+      <div className="grain" aria-hidden />
 
       {/* scroll progress bar */}
       <motion.div className="scroll-bar" style={{ scaleX: progress }} />
@@ -176,6 +204,13 @@ const Portfolio = () => {
 
           <div className="nav-right">
             <button
+              className="kbd-btn"
+              onClick={() => window.dispatchEvent(new Event("open-palette"))}
+              aria-label="Open command menu"
+            >
+              <span className="kbd-key">⌘</span>K
+            </button>
+            <button
               className="ghost-btn theme"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Toggle theme"
@@ -206,9 +241,17 @@ const Portfolio = () => {
               👋 Hey, I'm
             </motion.span>
             <motion.h1 className="hero-name" variants={fadeUp}>
-              {profile.name.split(" ").map((w, i) => (
-                <span key={i} className="word">
-                  {w}{" "}
+              {profile.name.split(" ").map((word, wi) => (
+                <span key={wi} className="word">
+                  {word.split("").map((ch, ci) => (
+                    <span
+                      key={ci}
+                      className="char"
+                      style={{ animationDelay: `${(wi * 7 + ci) * 0.035 + 0.2}s` }}
+                    >
+                      {ch}
+                    </span>
+                  ))}
                 </span>
               ))}
             </motion.h1>
@@ -219,22 +262,16 @@ const Portfolio = () => {
               {profile.tagline}
             </motion.p>
             <motion.div className="hero-cta" variants={fadeUp}>
-              <motion.button
-                className="btn primary"
-                onClick={() => scrollTo("projects")}
-                whileHover={{ y: -3, scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-              >
-                🚀 View My Work
-              </motion.button>
-              <motion.a
-                className="btn ghost"
-                href={`mailto:${profile.email}`}
-                whileHover={{ y: -3, scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-              >
-                ✉️ Get in Touch
-              </motion.a>
+              <Magnetic>
+                <button className="btn primary" onClick={() => scrollTo("projects")}>
+                  View My Work →
+                </button>
+              </Magnetic>
+              <Magnetic>
+                <a className="btn ghost" href={`mailto:${profile.email}`}>
+                  Get in Touch
+                </a>
+              </Magnetic>
             </motion.div>
             <motion.div className="hero-socials" variants={fadeUp}>
               <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
@@ -483,32 +520,22 @@ const Portfolio = () => {
             I'm open to AI/ML, Software, Data and MLOps roles — and always happy to chat.
           </p>
           <div className="contact-cta">
-            <motion.a
-              className="btn primary"
-              href={`mailto:${profile.email}`}
-              whileHover={{ y: -3, scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              ✉️ Say Hello
-            </motion.a>
-            <motion.a
-              className="btn ghost"
-              href={profile.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ y: -3, scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              in LinkedIn
-            </motion.a>
+            <Magnetic>
+              <a className="btn primary" href={`mailto:${profile.email}`}>
+                Say Hello →
+              </a>
+            </Magnetic>
+            <Magnetic>
+              <a className="btn ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+            </Magnetic>
           </div>
           <div className="resume-row">
-            <span>📄 Resumes:</span>
-            {profile.resumes.map((r) => (
-              <a key={r.file} href={`/${r.file}`} target="_blank" rel="noreferrer">
-                {r.label}
-              </a>
-            ))}
+            <span>Résumé</span>
+            <a href={`/${profile.resume.file}`} target="_blank" rel="noreferrer">
+              ↓ Download ({profile.resume.label})
+            </a>
           </div>
         </Reveal>
       </section>

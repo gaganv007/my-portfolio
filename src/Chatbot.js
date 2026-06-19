@@ -61,11 +61,11 @@ function getReply(raw, ctx) {
   }
 
   // resume
-  if (has("resume", "cv", "download")) {
+  if (has("resume", "cv", "download", "résumé")) {
     return {
       text:
-        "Gagan tailors a resume for each track — pick the one that fits your role and it'll open right up: 📄",
-      links: profile.resumes.map((r) => ({ label: r.label, href: `/${r.file}` })),
+        "Here's Gagan's résumé — download it and take a look: 📄",
+      links: [{ label: `↓ ${profile.resume.label} résumé`, href: `/${profile.resume.file}` }],
       chips: ["How to hire 📬", "Tech skills 🧠"],
     };
   }
@@ -217,6 +217,13 @@ export default function Chatbot({ repoCount }) {
   const [input, setInput] = useState("");
   const [nudge, setNudge] = useState(false);
   const bodyRef = useRef(null);
+
+  // allow other components (e.g. ⌘K palette) to open the bot
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("open-bot", onOpen);
+    return () => window.removeEventListener("open-bot", onOpen);
+  }, []);
 
   // gentle attention nudge after a few seconds (once)
   useEffect(() => {
