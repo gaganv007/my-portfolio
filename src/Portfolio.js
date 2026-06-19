@@ -10,6 +10,7 @@ import {
   achievements,
 } from "./data";
 import { useGithubRepos, langColor, prettyName } from "./useGithubRepos";
+import Chatbot from "./Chatbot";
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
 
@@ -477,6 +478,9 @@ const Portfolio = () => {
         <p>Designed & built by {profile.name} · {new Date().getFullYear()}</p>
         <p className="footer-sub">React · Framer Motion · Live GitHub API</p>
       </footer>
+
+      {/* AI sidekick */}
+      <Chatbot repoCount={repoCount} />
     </div>
   );
 };

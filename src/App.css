@@ -366,3 +366,90 @@ a { color: inherit; text-decoration: none; }
   .blob, .caret, .hero-name .word { animation: none !important; }
   * { scroll-behavior: auto; }
 }
+
+/* ============================================================
+   GV Bot — chat assistant
+   ============================================================ */
+.bot-launch-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  display: flex; align-items: center; gap: 10px; }
+.bot-launch {
+  width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--grad); color: #fff; font-size: 26px; display: grid; place-items: center;
+  box-shadow: 0 14px 34px -8px var(--violet); position: relative; order: 2;
+}
+.bot-ping { position: absolute; top: 6px; right: 6px; width: 12px; height: 12px;
+  border-radius: 50%; background: var(--green); border: 2px solid var(--bg);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); animation: ping 1.8s infinite; }
+@keyframes ping {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); }
+  70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+.bot-nudge { order: 1; background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: 14px;
+  font-weight: 500; box-shadow: var(--shadow); white-space: nowrap; }
+
+.bot-panel {
+  position: fixed; bottom: 96px; right: 24px; z-index: 300;
+  width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100vh - 130px));
+  display: flex; flex-direction: column; overflow: hidden;
+  background: color-mix(in srgb, var(--bg2) 92%, transparent);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow);
+}
+.bot-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--grad-soft); }
+.bot-id { display: flex; align-items: center; gap: 10px; }
+.bot-ava { width: 40px; height: 40px; display: grid; place-items: center; font-size: 22px;
+  background: var(--grad); border-radius: 12px; box-shadow: 0 6px 16px -6px var(--violet); }
+.bot-id strong { font-family: var(--display); display: block; font-size: 15px; }
+.bot-status { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.bot-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; }
+.bot-close { background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  width: 32px; height: 32px; border-radius: 9px; cursor: pointer; font-size: 13px; }
+.bot-close:hover { background: var(--surface-2); }
+
+.bot-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.bot-body::-webkit-scrollbar { width: 6px; }
+.bot-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+.bot-row { display: flex; gap: 8px; align-items: flex-end; max-width: 100%; }
+.bot-row.user { flex-direction: row-reverse; }
+.bot-mini { font-size: 17px; flex-shrink: 0; margin-bottom: 2px; }
+.bot-bubble { padding: 11px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+  max-width: 80%; word-wrap: break-word; }
+.bot-row.bot .bot-bubble { background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text); border-bottom-left-radius: 5px; }
+.bot-row.user .bot-bubble { background: var(--grad); color: #fff; border-bottom-right-radius: 5px; }
+.bot-text { white-space: pre-line; }
+.bot-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.bot-links a { font-size: 12.5px; font-weight: 600; padding: 7px 11px; border-radius: 9px;
+  background: var(--grad-soft); border: 1px solid var(--border); color: var(--cyan); }
+.bot-links a:hover { color: var(--text); }
+
+.bot-bubble.typing { display: flex; gap: 4px; padding: 14px; }
+.bot-bubble.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
+  animation: bounce 1.2s infinite; }
+.bot-bubble.typing span:nth-child(2) { animation-delay: 0.15s; }
+.bot-bubble.typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; } }
+
+.bot-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+.bot-chips button { font-size: 12.5px; font-weight: 500; padding: 8px 12px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text); cursor: pointer;
+  transition: 0.2s; }
+.bot-chips button:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+
+.bot-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); }
+.bot-input input { flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 14px; color: var(--text); font-size: 14px; font-family: var(--font);
+  outline: none; }
+.bot-input input:focus { border-color: var(--cyan); }
+.bot-input button { width: 44px; border: none; border-radius: 12px; background: var(--grad);
+  color: #fff; font-size: 15px; cursor: pointer; flex-shrink: 0; }
+.bot-input button:hover { box-shadow: 0 8px 20px -8px var(--violet); }
+
+@media (max-width: 480px) {
+  .bot-panel { right: 12px; left: 12px; width: auto; bottom: 88px; height: calc(100vh - 120px); }
+  .bot-launch-wrap { right: 16px; bottom: 16px; }
+}
