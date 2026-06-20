@@ -85,7 +85,7 @@ function Typewriter({ words }) {
 }
 
 const Portfolio = () => {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [active, setActive] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const { repos, status } = useGithubRepos();
