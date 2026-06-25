@@ -20,7 +20,6 @@ import {
   Magnetic,
   ScrollTop,
   CommandPalette,
-  RobotMark,
 } from "./ui";
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
@@ -86,12 +85,18 @@ function Typewriter({ words }) {
 }
 
 const Portfolio = () => {
-  const [theme, setTheme] = useState(() =>
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
+  // theme mode: "light" | "dark" | "auto" (auto follows the OS). Default light.
+  const [themeMode, setThemeMode] = useState(
+    () => (typeof window !== "undefined" && localStorage.getItem("themeMode")) || "light"
   );
+  const [systemDark, setSystemDark] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  const theme = themeMode === "auto" ? (systemDark ? "dark" : "light") : themeMode;
+  const cycleTheme = () =>
+    setThemeMode((m) => (m === "light" ? "dark" : m === "dark" ? "auto" : "light"));
   const [active, setActive] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const { repos, status } = useGithubRepos();
@@ -103,12 +108,16 @@ const Portfolio = () => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // follow the OS light/dark setting automatically
+  useEffect(() => {
+    try { localStorage.setItem("themeMode", themeMode); } catch (_) {}
+  }, [themeMode]);
+
+  // keep the OS preference in sync (used when mode is "auto")
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = (e) => setTheme(e.matches ? "dark" : "light");
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
+    const onChange = (e) => setSystemDark(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   // active section highlighting
@@ -167,6 +176,8 @@ const Portfolio = () => {
         run: () => window.open(profile.linkedin, "_blank") },
       { label: "Chat with GV Bot", hint: "assistant", icon: "🤖",
         run: () => window.dispatchEvent(new Event("open-bot")) },
+      { label: "Switch theme", hint: "light / dark / auto", icon: "🌗",
+        run: () => cycleTheme() },
     ],
     [] // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -200,7 +211,7 @@ const Portfolio = () => {
             whileTap={{ scale: 0.95 }}
             aria-label="Gagan Veginati — home"
           >
-            <RobotMark size={24} />
+            <span>GV</span>
           </motion.button>
 
           <div className={`nav-links ${menuOpen ? "open" : ""}`}>
@@ -222,6 +233,14 @@ const Portfolio = () => {
               aria-label="Open command menu"
             >
               <span className="kbd-key">⌘</span>K
+            </button>
+            <button
+              className="ghost-btn theme"
+              onClick={cycleTheme}
+              aria-label={`Theme: ${themeMode}. Click to change.`}
+              title={`Theme: ${themeMode} — click for light / dark / auto`}
+            >
+              {themeMode === "light" ? "☀️" : themeMode === "dark" ? "🌙" : "🌗"}
             </button>
             <button
               className={`burger ${menuOpen ? "x" : ""}`}

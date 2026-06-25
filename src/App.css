@@ -192,8 +192,8 @@ a { color: inherit; text-decoration: none; }
 .edu-note { color: var(--muted); font-size: 13px; line-height: 1.55; }
 
 /* skills */
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(332px, 1fr)); gap: 16px; }
-.skill-card { height: 100%; }
+.skills-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.skill-card { flex: 0 1 340px; }
 .skill-inner { background: transparent; border: 1px solid var(--border); border-radius: 14px; padding: 30px; height: 100%;
   transition: background 0.25s, border-color 0.25s; }
 .skill-inner:hover { background: var(--surface); border-color: var(--text); }
@@ -206,7 +206,8 @@ a { color: inherit; text-decoration: none; }
 .chip:hover { color: var(--text); border-color: var(--text); }
 
 /* featured projects */
-.featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(332px, 1fr)); gap: 16px; margin-bottom: 64px; }
+.featured-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 64px; }
+.featured-grid > * { flex: 0 1 354px; }
 .feat-card { display: flex; flex-direction: column; background: transparent; border: 1px solid var(--border); border-radius: 16px;
   padding: 32px; position: relative; height: 100%; transition: background 0.25s, border-color 0.25s; }
 .feat-card:hover { background: var(--surface); border-color: var(--text); }

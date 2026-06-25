@@ -1,22 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-/* --- robot brand mark (GV Bot) — inherits currentColor --- */
-export function RobotMark({ size = 24 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="2.7" r="1.35" fill="currentColor" />
-      <line x1="12" y1="4" x2="12" y2="6.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <rect x="4.4" y="6.4" width="15.2" height="12.4" rx="4.2" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="9.1" cy="12.4" r="1.5" fill="currentColor" />
-      <circle cx="14.9" cy="12.4" r="1.5" fill="currentColor" />
-      <line x1="9.6" y1="15.9" x2="14.4" y2="15.9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="2.5" y1="10.8" x2="2.5" y2="14.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="21.5" y1="10.8" x2="21.5" y2="14.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 /* ============================================================
    Reusable polish components for the "remaster" pass.
    ============================================================ */
@@ -48,7 +32,7 @@ export function Preloader() {
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 140, damping: 12 }}
           >
-            <RobotMark size={48} />
+            GV
           </motion.div>
           <div className="pre-bar"><motion.span
             initial={{ scaleX: 0 }}
