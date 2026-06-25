@@ -380,7 +380,27 @@ a { color: inherit; text-decoration: none; }
 .bot-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 .bot-row { display: flex; gap: 8px; align-items: flex-end; max-width: 100%; }
 .bot-row.user { flex-direction: row-reverse; }
-.bot-mini { font-size: 16px; flex-shrink: 0; margin-bottom: 2px; }
+.bot-mini { width: 26px; height: 26px; flex-shrink: 0; margin-bottom: 2px; border-radius: 50%;
+  background: var(--text); color: var(--bg); display: grid; place-items: center; padding: 3px; }
+
+/* animated GV Bot mascot */
+.bot-robot { width: 100%; height: 100%; display: block; overflow: visible; }
+.bot-ava .bot-robot { width: 26px; height: 26px; }
+.launch-robot { width: 30px; height: 30px; }
+.br-screen { fill: var(--text); }
+.bot-launch .br-screen, .bot-ava .br-screen, .bot-mini .br-screen { fill: #1b1530; }
+.br-eye { fill: #7fe6ff; transform-box: fill-box; transform-origin: center;
+  animation: br-blink 4.2s infinite; }
+.br-eye2 { animation-delay: 0.04s; }
+.br-antenna { fill: var(--accent); transform-box: fill-box; transform-origin: center;
+  animation: br-pulse 1.8s ease-in-out infinite; }
+.br-float { transform-box: fill-box; transform-origin: center; animation: br-float 3.4s ease-in-out infinite; }
+@keyframes br-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.12); } }
+@keyframes br-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.82); } 50% { opacity: 1; transform: scale(1.18); } }
+@keyframes br-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.3px); } }
+@media (prefers-reduced-motion: reduce) {
+  .br-eye, .br-antenna, .br-float { animation: none !important; }
+}
 .bot-bubble { padding: 11px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; max-width: 80%; word-wrap: break-word; }
 .bot-row.bot .bot-bubble { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
 .bot-row.user .bot-bubble { background: var(--text); color: var(--bg); border-bottom-right-radius: 4px; }

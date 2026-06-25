@@ -204,6 +204,25 @@ function getReply(raw, ctx) {
 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/* Animated GV Bot mascot — blinking eyes, pulsing antenna, gentle float.
+   Head/ears/antenna use currentColor so it adapts to its container. */
+function BotRobot({ className = "" }) {
+  return (
+    <svg className={`bot-robot ${className}`} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <g className="br-float">
+        <line x1="20" y1="3.6" x2="20" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <circle className="br-antenna" cx="20" cy="3" r="2.1" />
+        <line x1="4.6" y1="16.5" x2="4.6" y2="23.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+        <line x1="35.4" y1="16.5" x2="35.4" y2="23.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+        <rect x="6.5" y="9" width="27" height="22" rx="7.5" fill="currentColor" />
+        <rect className="br-screen" x="11" y="13.4" width="18" height="13.2" rx="4.6" />
+        <circle className="br-eye" cx="16" cy="20" r="2.2" />
+        <circle className="br-eye br-eye2" cx="24" cy="20" r="2.2" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Chatbot({ repoCount }) {
   const [open, setOpen] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -284,7 +303,7 @@ export default function Chatbot({ repoCount }) {
           transition={nudge ? { duration: 1.2, repeat: Infinity } : {}}
           aria-label="Open chat"
         >
-          {open ? "✕" : "🤖"}
+          {open ? "✕" : <BotRobot className="launch-robot" />}
           {!open && <span className="bot-ping" />}
         </motion.button>
       </div>
@@ -301,7 +320,7 @@ export default function Chatbot({ repoCount }) {
           >
             <div className="bot-head">
               <div className="bot-id">
-                <span className="bot-ava">🤖</span>
+                <span className="bot-ava"><BotRobot /></span>
                 <div>
                   <strong>GV Bot</strong>
                   <span className="bot-status"><i /> online · AI sidekick</span>
@@ -313,7 +332,7 @@ export default function Chatbot({ repoCount }) {
             <div className="bot-body" ref={bodyRef}>
               {msgs.map((m, i) => (
                 <div key={i} className={`bot-row ${m.from}`}>
-                  {m.from === "bot" && <span className="bot-mini">🤖</span>}
+                  {m.from === "bot" && <span className="bot-mini"><BotRobot /></span>}
                   <div className="bot-bubble">
                     <span className="bot-text">{m.text}</span>
                     {m.links && (
@@ -336,7 +355,7 @@ export default function Chatbot({ repoCount }) {
 
               {typing && (
                 <div className="bot-row bot">
-                  <span className="bot-mini">🤖</span>
+                  <span className="bot-mini"><BotRobot /></span>
                   <div className="bot-bubble typing">
                     <span /><span /><span />
                   </div>
