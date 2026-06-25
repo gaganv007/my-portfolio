@@ -20,7 +20,7 @@ export const profile = {
   phone: "(657) 726-5627",
   github: "https://github.com/gaganv007",
   linkedin: "https://linkedin.com/in/gagan-veginati",
-  avatar: "https://avatars.githubusercontent.com/u/82023745?v=4",
+  avatar: "/gagan.jpg",
   resume: { label: "AI / ML Engineer", file: "Gagan_Veginati_AI_ML_Engineer.pdf" },
 };
 

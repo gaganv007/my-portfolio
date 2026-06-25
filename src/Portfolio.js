@@ -20,6 +20,7 @@ import {
   Magnetic,
   ScrollTop,
   CommandPalette,
+  RobotMark,
 } from "./ui";
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
@@ -85,7 +86,12 @@ function Typewriter({ words }) {
 }
 
 const Portfolio = () => {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+  );
   const [active, setActive] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const { repos, status } = useGithubRepos();
@@ -96,6 +102,14 @@ const Portfolio = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  // follow the OS light/dark setting automatically
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = (e) => setTheme(e.matches ? "dark" : "light");
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   // active section highlighting
   useEffect(() => {
@@ -153,10 +167,8 @@ const Portfolio = () => {
         run: () => window.open(profile.linkedin, "_blank") },
       { label: "Chat with GV Bot", hint: "assistant", icon: "🤖",
         run: () => window.dispatchEvent(new Event("open-bot")) },
-      { label: theme === "dark" ? "Switch to Light" : "Switch to Dark", hint: "theme", icon: "🌓",
-        run: () => setTheme(theme === "dark" ? "light" : "dark") },
     ],
-    [theme] // eslint-disable-line react-hooks/exhaustive-deps
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   return (
@@ -186,8 +198,9 @@ const Portfolio = () => {
             onClick={() => scrollTo("home")}
             whileHover={{ rotate: -6, scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Gagan Veginati — home"
           >
-            <span>GV</span>
+            <RobotMark size={24} />
           </motion.button>
 
           <div className={`nav-links ${menuOpen ? "open" : ""}`}>
@@ -209,13 +222,6 @@ const Portfolio = () => {
               aria-label="Open command menu"
             >
               <span className="kbd-key">⌘</span>K
-            </button>
-            <button
-              className="ghost-btn theme"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? "☀️" : "🌙"}
             </button>
             <button
               className={`burger ${menuOpen ? "x" : ""}`}
@@ -418,17 +424,17 @@ const Portfolio = () => {
           ))}
         </div>
 
-        {/* LIVE GITHUB REPOS — auto-updates when you push new repos */}
+        {/* MORE PROJECTS */}
         <Reveal className="live-head">
           <h3>
-            🛰️ Live from GitHub{" "}
-            {status === "ok" && <span className="live-count">{repoCount} repos</span>}
+            More Projects{" "}
+            {status === "ok" && <span className="live-count">{repoCount}</span>}
           </h3>
-          <p>Auto-synced from <a href={profile.github} target="_blank" rel="noreferrer">@{profile.github.split("/").pop()}</a> — new projects appear here automatically.</p>
+          <p>A wider selection of what I've built. <a href={profile.github} target="_blank" rel="noreferrer">See everything on GitHub →</a></p>
         </Reveal>
 
         {status === "error" && (
-          <p className="live-msg">Couldn't reach GitHub right now — check it directly <a href={profile.github} target="_blank" rel="noreferrer">here</a>.</p>
+          <p className="live-msg">Couldn't load these right now — browse them <a href={profile.github} target="_blank" rel="noreferrer">on GitHub</a>.</p>
         )}
 
         {status === "ok" && languages.length > 2 && (
@@ -455,7 +461,7 @@ const Portfolio = () => {
                   <motion.a
                     key={`${langFilter}-${r.id}`}
                     className="repo-card"
-                    href={r.homepage || r.url}
+                    href={r.url}
                     target="_blank"
                     rel="noreferrer"
                     initial={{ opacity: 0, y: 16 }}
@@ -465,10 +471,10 @@ const Portfolio = () => {
                   >
                     <div className="repo-top">
                       <span className="repo-folder">📁</span>
-                      {r.homepage && <span className="repo-live">live ↗</span>}
+                      <span className="repo-gh">View on GitHub →</span>
                     </div>
                     <h4>{prettyName(r.name)}</h4>
-                    <p>{r.description || "A project by Gagan — open to see more."}</p>
+                    <p>{r.description || "Open on GitHub to learn more."}</p>
                     <div className="repo-meta">
                       {r.language && (
                         <span className="repo-lang">

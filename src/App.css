@@ -56,10 +56,16 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- background ---------- */
 .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--bg); }
-.blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.07; background: var(--accent); }
+.blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.07; background: var(--accent);
+  animation: drift 26s ease-in-out infinite; }
 .b1 { width: 40vw; height: 40vw; top: -16%; right: -10%; }
-.b2 { display: none; }
-.b3 { width: 30vw; height: 30vw; bottom: -14%; left: -8%; opacity: 0.05; }
+.b2 { width: 34vw; height: 34vw; top: 32%; left: 36%; opacity: 0.04; animation-delay: -10s; }
+.b3 { width: 30vw; height: 30vw; bottom: -14%; left: -8%; opacity: 0.05; animation-delay: -18s; }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4vw, 3vh) scale(1.08); }
+  66% { transform: translate(-3vw, -2vh) scale(0.94); }
+}
 .grid-overlay { position: absolute; inset: 0;
   background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 26px 26px;
   -webkit-mask-image: radial-gradient(circle at 50% 20%, #000, transparent 78%);
@@ -142,9 +148,7 @@ a { color: inherit; text-decoration: none; }
 .hero-avatar { position: relative; display: grid; place-items: center end; }
 .avatar-ring { width: clamp(200px, 24vw, 280px); aspect-ratio: 1; border-radius: 16px; padding: 0;
   border: 1px solid var(--border); overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow); }
-.avatar-ring img { width: 100%; height: 100%; border-radius: 0; object-fit: cover; border: none;
-  filter: grayscale(1) contrast(1.05); transition: filter 0.4s ease; }
-.avatar-ring:hover img { filter: grayscale(0); }
+.avatar-ring img { width: 100%; height: 100%; border-radius: 0; object-fit: cover; object-position: center 30%; border: none; }
 .sticker { position: absolute; font-size: clamp(1.3rem, 2.6vw, 1.9rem); background: var(--surface-2);
   border: 1px solid var(--border); border-radius: 12px; width: 50px; height: 50px; display: grid; place-items: center;
   box-shadow: var(--shadow); }
@@ -244,8 +248,8 @@ a { color: inherit; text-decoration: none; }
 .repo-card:hover { background: var(--surface); border-color: var(--text); }
 .repo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .repo-folder { font-size: 1.1rem; color: var(--muted); }
-.repo-live { font-size: 11px; color: var(--accent); font-weight: 500; padding: 2px 8px; font-family: var(--mono);
-  border: 1px solid var(--border); border-radius: 6px; }
+.repo-gh { font-size: 11px; color: var(--muted); font-weight: 500; font-family: var(--mono); transition: color 0.2s; }
+.repo-card:hover .repo-gh { color: var(--accent); }
 .repo-card h4 { font-family: var(--display); font-size: 1.3rem; margin-bottom: 8px; word-break: break-word; font-weight: 400; }
 .repo-card p { color: var(--muted); font-size: 13.5px; line-height: 1.55; flex: 1; }
 .repo-meta { display: flex; gap: 16px; align-items: center; margin-top: 16px; color: var(--muted); font-size: 12.5px;
