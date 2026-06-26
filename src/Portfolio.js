@@ -24,6 +24,16 @@ import {
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
 
+const relTime = (ms) => {
+  if (!ms) return "—";
+  const d = Math.floor((Date.now() - ms) / 86400000);
+  if (d <= 0) return "today";
+  if (d === 1) return "yesterday";
+  if (d < 30) return `${d}d ago`;
+  if (d < 365) return `${Math.floor(d / 30)}mo ago`;
+  return `${Math.floor(d / 365)}y ago`;
+};
+
 /* ---------- small animation helpers ---------- */
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -47,40 +57,6 @@ function Reveal({ children, i = 0, className = "", id }) {
     >
       {children}
     </motion.div>
-  );
-}
-
-/* ---------- animated role typewriter ---------- */
-function Typewriter({ words }) {
-  const [idx, setIdx] = useState(0);
-  const [text, setText] = useState("");
-  const [del, setDel] = useState(false);
-
-  useEffect(() => {
-    const word = words[idx % words.length];
-    const speed = del ? 45 : 90;
-    const t = setTimeout(() => {
-      if (!del) {
-        const next = word.slice(0, text.length + 1);
-        setText(next);
-        if (next === word) setTimeout(() => setDel(true), 1300);
-      } else {
-        const next = word.slice(0, text.length - 1);
-        setText(next);
-        if (next === "") {
-          setDel(false);
-          setIdx((i) => i + 1);
-        }
-      }
-    }, speed);
-    return () => clearTimeout(t);
-  }, [text, del, idx, words]);
-
-  return (
-    <span className="type">
-      {text}
-      <span className="caret">|</span>
-    </span>
   );
 }
 
@@ -157,6 +133,21 @@ const Portfolio = () => {
     () => [...new Set(skills.flatMap((c) => c.items))].slice(0, 22),
     []
   );
+
+  // computed GitHub stats for the "at a glance" panel
+  const ghStats = useMemo(() => {
+    const langs = new Map();
+    let lastPush = 0;
+    let stars = 0;
+    repos.forEach((r) => {
+      if (r.language) langs.set(r.language, (langs.get(r.language) || 0) + 1);
+      if (r.pushedAt) lastPush = Math.max(lastPush, new Date(r.pushedAt).getTime());
+      stars += r.stars || 0;
+    });
+    const sorted = [...langs.entries()].sort((a, b) => b[1] - a[1]);
+    const total = sorted.reduce((a, [, n]) => a + n, 0);
+    return { count: repos.length, stars, langCount: sorted.length, top: sorted[0]?.[0], sorted, total, lastPush };
+  }, [repos]);
 
   const commands = useMemo(
     () => [
@@ -280,9 +271,6 @@ const Portfolio = () => {
                 </span>
               ))}
             </motion.h1>
-            <motion.h2 className="hero-role" variants={fadeUp}>
-              <Typewriter words={profile.roles} />
-            </motion.h2>
             <motion.p className="hero-tag" variants={fadeUp}>
               {profile.tagline}
             </motion.p>
@@ -311,28 +299,16 @@ const Portfolio = () => {
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 80, delay: 0.2 }}
           >
-            <motion.div
-              className="avatar-ring"
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <img src={profile.avatar} alt={profile.name} />
-            </motion.div>
-            {["🧠", "⚡", "🤖", "📈"].map((e, i) => (
-              <motion.span
-                key={i}
-                className={`sticker s${i}`}
-                animate={{ y: [0, -10, 0], rotate: [0, 8, 0] }}
-                transition={{
-                  duration: 3 + i,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.4,
-                }}
-              >
-                {e}
-              </motion.span>
-            ))}
+            <div className="avatar-stage">
+              <div className="avatar-ring">
+                <img src={profile.avatar} alt={profile.name} />
+              </div>
+              {["🧠", "⚡", "🤖", "📈"].map((e, i) => (
+                <div className={`orbit-ring orbit-${i}`} key={i} aria-hidden="true">
+                  <span className="orbit-icon">{e}</span>
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
 
@@ -442,6 +418,37 @@ const Portfolio = () => {
             </Reveal>
           ))}
         </div>
+
+        {/* GITHUB AT A GLANCE — computed from live repo data */}
+        {status === "ok" && ghStats.total > 0 && (
+          <Reveal className="gh-glance">
+            <div className="gh-tiles">
+              <div className="gh-tile"><strong>{ghStats.count}</strong><span>Repositories</span></div>
+              <div className="gh-tile"><strong>{ghStats.langCount}</strong><span>Languages</span></div>
+              <div className="gh-tile"><strong>{ghStats.top}</strong><span>Most used</span></div>
+              <div className="gh-tile"><strong>{relTime(ghStats.lastPush)}</strong><span>Last active</span></div>
+            </div>
+            <div className="gh-bar">
+              {ghStats.sorted.map(([lang, n]) => (
+                <span
+                  key={lang}
+                  className="gh-seg"
+                  style={{ width: `${(n / ghStats.total) * 100}%`, background: langColor(lang) }}
+                  title={`${lang} · ${n} ${n === 1 ? "repo" : "repos"}`}
+                />
+              ))}
+            </div>
+            <div className="gh-legend">
+              {ghStats.sorted.slice(0, 8).map(([lang, n]) => (
+                <span className="gh-leg" key={lang}>
+                  <i style={{ background: langColor(lang) }} />
+                  {lang}
+                  <em>{Math.round((n / ghStats.total) * 100)}%</em>
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        )}
 
         {/* MORE PROJECTS */}
         <Reveal className="live-head">

@@ -144,15 +144,29 @@ a { color: inherit; text-decoration: none; }
 .hero-socials a { font-weight: 500; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
 .hero-socials a:hover { border-color: var(--accent); color: var(--accent); }
 
-/* avatar */
+/* avatar + orbiting icons */
 .hero-avatar { position: relative; display: grid; place-items: center end; }
-.avatar-ring { width: clamp(200px, 24vw, 280px); aspect-ratio: 1; border-radius: 16px; padding: 0;
-  border: 1px solid var(--border); overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow); }
-.avatar-ring img { width: 100%; height: 100%; border-radius: 0; object-fit: cover; object-position: center 30%; border: none; }
-.sticker { position: absolute; font-size: clamp(1.3rem, 2.6vw, 1.9rem); background: var(--surface-2);
-  border: 1px solid var(--border); border-radius: 12px; width: 50px; height: 50px; display: grid; place-items: center;
-  box-shadow: var(--shadow); }
-.s0 { top: -4%; left: -6%; } .s1 { top: 12%; right: -8%; } .s2 { bottom: 14%; left: -8%; } .s3 { bottom: -4%; right: 6%; }
+.avatar-stage { position: relative; width: clamp(200px, 24vw, 280px); aspect-ratio: 1; }
+.avatar-ring { width: 100%; height: 100%; border-radius: 16px; border: 1px solid var(--border);
+  overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow); }
+.avatar-ring img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+
+/* moons orbiting the photo */
+.orbit-ring { position: absolute; top: 50%; left: 50%; border-radius: 50%; pointer-events: none;
+  animation: orbit 22s linear infinite; }
+.orbit-ring .orbit-icon { position: absolute; top: 0; left: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  display: grid; place-items: center; font-size: 1.45rem; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 13px; box-shadow: var(--shadow); animation: orbit-rev 22s linear infinite; }
+.orbit-0 { width: 112%; height: 112%; animation-duration: 22s; animation-delay: 0s; }
+.orbit-0 .orbit-icon { animation-duration: 22s; animation-delay: 0s; }
+.orbit-1 { width: 130%; height: 130%; animation-duration: 30s; animation-delay: -7s; }
+.orbit-1 .orbit-icon { animation-duration: 30s; animation-delay: -7s; }
+.orbit-2 { width: 112%; height: 112%; animation-duration: 22s; animation-delay: -11s; }
+.orbit-2 .orbit-icon { animation-duration: 22s; animation-delay: -11s; }
+.orbit-3 { width: 130%; height: 130%; animation-duration: 30s; animation-delay: -22s; }
+.orbit-3 .orbit-icon { animation-duration: 30s; animation-delay: -22s; }
+@keyframes orbit { from { transform: translate(-50%, -50%) rotate(0); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes orbit-rev { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
 .scroll-hint { text-align: center; margin-top: 46px; color: var(--muted); font-size: 12px; letter-spacing: 0.2em;
   text-transform: uppercase; font-family: var(--mono); }
 
@@ -227,6 +241,25 @@ a { color: inherit; text-decoration: none; }
 
 /* tilt glow off for minimal */
 .feat-card::after { display: none; }
+
+/* GitHub at a glance */
+.gh-glance { border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 44px;
+  background: var(--surface-2); }
+.gh-tiles { display: flex; flex-wrap: wrap; gap: 16px 28px; margin-bottom: 22px; }
+.gh-tile { flex: 1 1 110px; }
+.gh-tile strong { display: block; font-family: var(--display); font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 400;
+  line-height: 1; text-transform: capitalize; }
+.gh-tile span { color: var(--muted); font-size: 11.5px; font-family: var(--mono); text-transform: uppercase;
+  letter-spacing: 0.05em; }
+.gh-bar { display: flex; height: 12px; border-radius: 7px; overflow: hidden; margin-bottom: 16px; background: var(--surface);
+  gap: 1px; }
+.gh-seg { height: 100%; transition: opacity 0.2s; }
+.gh-glance:hover .gh-seg { opacity: 0.65; }
+.gh-glance .gh-seg:hover { opacity: 1; }
+.gh-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; }
+.gh-leg { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text); font-family: var(--mono); }
+.gh-leg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.gh-leg em { color: var(--muted); font-style: normal; }
 
 /* live repos */
 .live-head h3 { font-family: var(--display); font-size: 1.9rem; font-weight: 400; display: flex; align-items: center;
@@ -449,6 +482,10 @@ a { color: inherit; text-decoration: none; }
   .section { padding: 64px 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .blob, .caret, .hero-name .char, .marquee-track { animation: none !important; }
+  .blob, .caret, .hero-name .char, .marquee-track, .orbit-ring, .orbit-ring .orbit-icon { animation: none !important; }
+  .orbit-0 { transform: translate(-50%, -50%) rotate(18deg); } .orbit-0 .orbit-icon { transform: rotate(-18deg); }
+  .orbit-1 { transform: translate(-50%, -50%) rotate(108deg); } .orbit-1 .orbit-icon { transform: rotate(-108deg); }
+  .orbit-2 { transform: translate(-50%, -50%) rotate(198deg); } .orbit-2 .orbit-icon { transform: rotate(-198deg); }
+  .orbit-3 { transform: translate(-50%, -50%) rotate(288deg); } .orbit-3 .orbit-icon { transform: rotate(-288deg); }
   * { scroll-behavior: auto; }
 }

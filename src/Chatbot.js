@@ -323,7 +323,7 @@ export default function Chatbot({ repoCount }) {
                 <span className="bot-ava"><BotRobot /></span>
                 <div>
                   <strong>GV Bot</strong>
-                  <span className="bot-status"><i /> online · AI sidekick</span>
+                  <span className="bot-status"><i /> online</span>
                 </div>
               </div>
               <button className="bot-close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
