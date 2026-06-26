@@ -151,18 +151,14 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow); }
 .avatar-ring img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
 
-/* moons orbiting the photo — size / speed / phase set per-icon via CSS vars */
-.orbit-ring { position: absolute; top: 50%; left: 50%; width: var(--size, 120%); height: var(--size, 120%);
-  border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) rotate(var(--angle, 0deg));
-  animation: orbit var(--d, 24s) linear infinite; animation-delay: var(--delay, 0s); }
-.orbit-ring .orbit-icon { position: absolute; top: 0; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px;
-  display: grid; place-items: center; font-size: 1.4rem; background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 13px; box-shadow: var(--shadow); transform: rotate(calc(-1 * var(--angle, 0deg)));
-  animation: orbit-rev var(--d, 24s) linear infinite; animation-delay: var(--delay, 0s); }
-@keyframes orbit { from { transform: translate(-50%, -50%) rotate(0); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-@keyframes orbit-rev { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
-.scroll-hint { text-align: center; margin-top: 46px; color: var(--muted); font-size: 12px; letter-spacing: 0.2em;
-  text-transform: uppercase; font-family: var(--mono); }
+/* floating tech badges pinned around the photo frame */
+.float-icon { position: absolute; width: 50px; height: 50px; display: grid; place-items: center;
+  font-size: 1.5rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow); z-index: 2; animation: floaty 4s ease-in-out infinite; }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.scroll-hint { align-self: flex-start; margin-top: 54px; color: var(--muted); font-size: 12px; letter-spacing: 0.2em;
+  text-transform: uppercase; font-family: var(--mono); display: inline-flex; align-items: center; gap: 8px; }
+.scroll-hint::before { content: ""; width: 30px; height: 1px; background: var(--border); display: inline-block; }
 
 /* ---------- stats ---------- */
 .stats-wrap { padding: 10px 24px 20px; }
@@ -476,7 +472,6 @@ a { color: inherit; text-decoration: none; }
   .section { padding: 64px 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .blob, .caret, .hero-name .char, .marquee-track, .orbit-ring, .orbit-ring .orbit-icon { animation: none !important; }
-  /* rings keep their per-icon --angle so they stay spread when static */
+  .blob, .caret, .hero-name .char, .marquee-track, .float-icon { animation: none !important; }
   * { scroll-behavior: auto; }
 }

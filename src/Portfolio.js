@@ -24,15 +24,14 @@ import {
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
 
-// orbiting hero icons: size = orbit diameter (% of photo), dur = speed, delay = phase
-const ORBIT_ICONS = [
-  { e: "🧠", size: 112, dur: 22, delay: 0 },
-  { e: "🤖", size: 112, dur: 22, delay: -11 },
-  { e: "🐍", size: 112, dur: 22, delay: -16.5 },
-  { e: "⚡", size: 128, dur: 30, delay: -5 },
-  { e: "📈", size: 128, dur: 30, delay: -20 },
-  { e: "☁️", size: 138, dur: 38, delay: -10 },
-  { e: "🚀", size: 138, dur: 38, delay: -28 },
+// floating tech badges pinned around the photo frame
+const FLOAT_ICONS = [
+  { e: "🧠", pos: { top: "-7%", left: "-7%" }, dur: 4.2, delay: 0 },
+  { e: "📈", pos: { top: "-7%", right: "-7%" }, dur: 3.6, delay: 0.5 },
+  { e: "⚡", pos: { top: "40%", right: "-11%" }, dur: 4.6, delay: 0.2 },
+  { e: "🚀", pos: { bottom: "-7%", right: "-4%" }, dur: 3.9, delay: 0.8 },
+  { e: "☁️", pos: { bottom: "-7%", left: "-4%" }, dur: 4.4, delay: 0.35 },
+  { e: "🤖", pos: { top: "40%", left: "-11%" }, dur: 3.7, delay: 0.6 },
 ];
 
 const relTime = (ms) => {
@@ -314,20 +313,19 @@ const Portfolio = () => {
               <div className="avatar-ring">
                 <img src={profile.avatar} alt={profile.name} />
               </div>
-              {ORBIT_ICONS.map((o, i) => (
-                <div
-                  className="orbit-ring"
+              {FLOAT_ICONS.map((o, i) => (
+                <span
+                  className="float-icon"
                   key={i}
                   aria-hidden="true"
                   style={{
-                    "--size": `${o.size}%`,
-                    "--d": `${o.dur}s`,
-                    "--delay": `${o.delay}s`,
-                    "--angle": `${i * (360 / ORBIT_ICONS.length)}deg`,
+                    ...o.pos,
+                    animationDuration: `${o.dur}s`,
+                    animationDelay: `${o.delay}s`,
                   }}
                 >
-                  <span className="orbit-icon">{o.e}</span>
-                </div>
+                  {o.e}
+                </span>
               ))}
             </div>
           </motion.div>
