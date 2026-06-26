@@ -2,7 +2,7 @@
 
 A modern, animated personal portfolio built with **React 19** and **Framer Motion**.
 
-**Live:** https://animated-croissant-177628.netlify.app/
+**Live:** https://gaganveginati.netlify.app/
 
 ![Tech](https://img.shields.io/badge/React-19-61dafb) ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-ff4d8d) ![Netlify](https://img.shields.io/badge/Deploy-Netlify-00c7b7)
 
