@@ -151,20 +151,14 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow); }
 .avatar-ring img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
 
-/* moons orbiting the photo */
-.orbit-ring { position: absolute; top: 50%; left: 50%; border-radius: 50%; pointer-events: none;
-  animation: orbit 22s linear infinite; }
-.orbit-ring .orbit-icon { position: absolute; top: 0; left: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px;
-  display: grid; place-items: center; font-size: 1.45rem; background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 13px; box-shadow: var(--shadow); animation: orbit-rev 22s linear infinite; }
-.orbit-0 { width: 112%; height: 112%; animation-duration: 22s; animation-delay: 0s; }
-.orbit-0 .orbit-icon { animation-duration: 22s; animation-delay: 0s; }
-.orbit-1 { width: 130%; height: 130%; animation-duration: 30s; animation-delay: -7s; }
-.orbit-1 .orbit-icon { animation-duration: 30s; animation-delay: -7s; }
-.orbit-2 { width: 112%; height: 112%; animation-duration: 22s; animation-delay: -11s; }
-.orbit-2 .orbit-icon { animation-duration: 22s; animation-delay: -11s; }
-.orbit-3 { width: 130%; height: 130%; animation-duration: 30s; animation-delay: -22s; }
-.orbit-3 .orbit-icon { animation-duration: 30s; animation-delay: -22s; }
+/* moons orbiting the photo — size / speed / phase set per-icon via CSS vars */
+.orbit-ring { position: absolute; top: 50%; left: 50%; width: var(--size, 120%); height: var(--size, 120%);
+  border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) rotate(var(--angle, 0deg));
+  animation: orbit var(--d, 24s) linear infinite; animation-delay: var(--delay, 0s); }
+.orbit-ring .orbit-icon { position: absolute; top: 0; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  display: grid; place-items: center; font-size: 1.4rem; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 13px; box-shadow: var(--shadow); transform: rotate(calc(-1 * var(--angle, 0deg)));
+  animation: orbit-rev var(--d, 24s) linear infinite; animation-delay: var(--delay, 0s); }
 @keyframes orbit { from { transform: translate(-50%, -50%) rotate(0); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes orbit-rev { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
 .scroll-hint { text-align: center; margin-top: 46px; color: var(--muted); font-size: 12px; letter-spacing: 0.2em;
@@ -221,7 +215,7 @@ a { color: inherit; text-decoration: none; }
 
 /* featured projects */
 .featured-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 64px; }
-.featured-grid > * { flex: 0 1 354px; }
+.featured-grid > * { flex: 0 1 328px; }
 .feat-card { display: flex; flex-direction: column; background: transparent; border: 1px solid var(--border); border-radius: 16px;
   padding: 32px; position: relative; height: 100%; transition: background 0.25s, border-color 0.25s; }
 .feat-card:hover { background: var(--surface); border-color: var(--text); }
@@ -483,9 +477,6 @@ a { color: inherit; text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .blob, .caret, .hero-name .char, .marquee-track, .orbit-ring, .orbit-ring .orbit-icon { animation: none !important; }
-  .orbit-0 { transform: translate(-50%, -50%) rotate(18deg); } .orbit-0 .orbit-icon { transform: rotate(-18deg); }
-  .orbit-1 { transform: translate(-50%, -50%) rotate(108deg); } .orbit-1 .orbit-icon { transform: rotate(-108deg); }
-  .orbit-2 { transform: translate(-50%, -50%) rotate(198deg); } .orbit-2 .orbit-icon { transform: rotate(-198deg); }
-  .orbit-3 { transform: translate(-50%, -50%) rotate(288deg); } .orbit-3 .orbit-icon { transform: rotate(-288deg); }
+  /* rings keep their per-icon --angle so they stay spread when static */
   * { scroll-behavior: auto; }
 }

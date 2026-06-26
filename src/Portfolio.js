@@ -24,6 +24,17 @@ import {
 
 const NAV = ["home", "about", "skills", "projects", "experience", "contact"];
 
+// orbiting hero icons: size = orbit diameter (% of photo), dur = speed, delay = phase
+const ORBIT_ICONS = [
+  { e: "🧠", size: 112, dur: 22, delay: 0 },
+  { e: "🤖", size: 112, dur: 22, delay: -11 },
+  { e: "🐍", size: 112, dur: 22, delay: -16.5 },
+  { e: "⚡", size: 128, dur: 30, delay: -5 },
+  { e: "📈", size: 128, dur: 30, delay: -20 },
+  { e: "☁️", size: 138, dur: 38, delay: -10 },
+  { e: "🚀", size: 138, dur: 38, delay: -28 },
+];
+
 const relTime = (ms) => {
   if (!ms) return "—";
   const d = Math.floor((Date.now() - ms) / 86400000);
@@ -303,9 +314,19 @@ const Portfolio = () => {
               <div className="avatar-ring">
                 <img src={profile.avatar} alt={profile.name} />
               </div>
-              {["🧠", "⚡", "🤖", "📈"].map((e, i) => (
-                <div className={`orbit-ring orbit-${i}`} key={i} aria-hidden="true">
-                  <span className="orbit-icon">{e}</span>
+              {ORBIT_ICONS.map((o, i) => (
+                <div
+                  className="orbit-ring"
+                  key={i}
+                  aria-hidden="true"
+                  style={{
+                    "--size": `${o.size}%`,
+                    "--d": `${o.dur}s`,
+                    "--delay": `${o.delay}s`,
+                    "--angle": `${i * (360 / ORBIT_ICONS.length)}deg`,
+                  }}
+                >
+                  <span className="orbit-icon">{o.e}</span>
                 </div>
               ))}
             </div>
